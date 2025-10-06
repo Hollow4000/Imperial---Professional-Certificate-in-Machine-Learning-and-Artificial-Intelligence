@@ -1,0 +1,42 @@
+from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+
+# Load the default wine dataset
+data = load_wine()
+X = data.data
+y = data.target
+
+# --- Step 1: Hold out 20% for testing ---
+X_train_val, X_test, y_train_val, y_test = train_test_split(
+    X, y, test_size=0.20, random_state=42, stratify=y
+)
+
+# --- Step 2: From the remaining 80%, take 25% for validation (25% of 80% = 20% total) ---
+X_train, X_val, y_train, y_val = train_test_split(
+    X_train_val, y_train_val, test_size=0.25, random_state=42, stratify=y_train_val
+)
+
+# Confirm the proportions
+print(f"Train set: {len(X_train)/len(X):.2%}")
+print(f"Validation set: {len(X_val)/len(X):.2%}")
+print(f"Test set: {len(X_test)/len(X):.2%}")
+
+# --- Step 3: Fit logistic regression model ---
+model = LogisticRegression(max_iter=1000, random_state=42)
+model.fit(X_train, y_train)
+
+# --- Step 4: Evaluate on validation set ---
+val_preds = model.predict(X_val)
+val_accuracy = accuracy_score(y_val, val_preds)
+print(f"\nValidation Accuracy: {val_accuracy:.4f}")
+
+# --- Step 5: Evaluate on test set ---
+test_preds = model.predict(X_test)
+test_accuracy = accuracy_score(y_test, test_preds)
+print(f"Test Accuracy: {test_accuracy:.4f}")
+
+# --- Step 6: Detailed test classification report ---
+print("\nClassification Report on Test Set:")
+print(classification_report(y_test, test_preds, target_names=data.target_names))
