@@ -1,0 +1,256 @@
+
+## 1. Detecting missing values
+
+#The first step in handling missing values is to detect them. Let’s explore different methods for identifying missing values in `arrays`, `series` and `DataFrames`. 
+
+#- Boolean masking of missing values using Pandas
+
+#- Counting missing values
+
+#- Visualising missing data
+
+#- Checking missing values in `arrays`
+
+#- Detecting missing values in `series`
+
+
+#a. Boolean masking of missing values using `Pandas`.
+
+#The methods `isnull()` and `notnull()` are used to create Boolean masks for missing values. 
+#`isnull()` returns `True` for missing values and `False` otherwise, while `notnull()` does the opposite.
+
+import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({'A': [1, 2, None, 4], 'B': [None, 2, 3, None]})
+
+#Detect missing values using isnull() and notnull()
+
+print(df.isnull())
+print(df.notnull())
+
+#b. Counting missing values
+
+#The missing values in a data set are counted using the `.sum()` method.
+missing_count = None
+missing_count = df.isnull().sum()
+
+#Compute the missing count
+print(missing_count)
+
+#c. Visualising missing data
+
+#Seaborn is a Python library built on top of Matplotlib, designed to simplify the creation of visually appealing and informative statistical graphics.
+#It integrates seamlessly with pandas `DataFrames`to support data analysis and visualisation.
+
+#One useful plot type is the heatmap, a graphical representation in which individual values are displayed as colour gradients. 
+#Heatmaps are especially helpful for visualising missing data, correlations or any matrix-like data sets.
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+sns.heatmap(df.isnull())
+plt.show()
+
+#d. Checking missing values in `arrays`
+
+#Use NumPy’s `isnan()` function to detect missing values in `arrays`.
+#Declare an array with missing values and display the presence of null values in the array
+
+array = None
+array = np.array([1, np.nan, 3, np.nan])
+print(np.isnan(array))
+
+#e. Detecting missing values in `series`
+
+#Use pandas' `isna()` function to detect `NaN` values.
+
+sseries = None
+series = pd.Series([1, None, 3, np.nan])
+#Display the missing values in the series
+print(series.isna())
+
+
+#2. Removing missing values
+
+#After detecting missing values in Python, one common approach is to remove them, especially when the missing data is minimal or when it cannot be reasonably imputed. 
+
+#The different ways of removal rows and/or column(s) with missing values are:
+
+#- Removing rows with missing values
+
+#- Removing columns with missing values
+
+#- Removing rows or columns based on a threshold
+
+#- Removing rows where all values are missing
+
+#- Removing columns where all values are missing
+
+#Removing rows with missing values
+#When df.dropna() is used, it removes rows in which any column has a missing value.
+data = {'A': [1, 2, np.nan, 4], 'B': [5, np.nan, 7, 8], 'C': [9, 10, 11, np.nan]}
+df = pd.DataFrame(data)
+df_cleaned =None
+df_cleaned = df.dropna()
+print(df_cleaned)
+
+#Removing columns with missing values
+#If entire columns contain many missing values, they can be dropped using dropna(axis=1).
+df_cleaned_columns = None
+df_cleaned_columns = df.dropna(axis=1)
+print(df_cleaned_columns)
+
+#Removing rows/columns based on threshold
+#The threshold for the minimum number of non-missing values required in a row or column can be specified using the `thresh` parameter.
+df_cleaned_threshold = None
+df_cleaned_threshold = df.dropna(thresh=2)
+print(df_cleaned_threshold)
+
+#Removing rows where all values are missing
+#To remove rows where all columns are missing, use how='all'
+df_cleaned_all = None
+df_cleaned_all = df.dropna(how='all')
+print(df_cleaned_all)
+
+#Removing columns where all values are missing
+#Columns where all entries are missing can be dropped by setting axis=1 and how='all'
+df_all_nan_columns_removed = None
+df_all_nan_columns_removed = df.dropna(axis=1, how='all')
+print(df_all_nan_columns_removed)
+
+#Explain the scenarios in which you would use dropna(axis=1, how='all') to remove columns
+#Provide examples of when this approach is beneficial for data preprocessing
+
+#3. Imputing missing values
+
+#Imputing missing values involves replacing `NaN` or missing entries in a data set with appropriate values to ensure the data set remains usable for analysis or modelling. 
+#Imputing can be performed in a variety of ways, such as:
+
+#- Imputing with the mean or the median
+
+#- Imputing with the mode
+
+#- Imputing with the constant value
+
+#- Imputing with `SimpleImputer`
+
+#- Predictive imputation
+
+#a. Imputing with the mean or the median
+
+#Imputing with the mean is a common technique for numerical data, where the mean of the column replaces missing values. 
+#This approach is suitable when the proportion of missing data is small and the mean does not significantly distort the overall distribution.
+
+#Imputing with the median is a better choice when the data contains outliers that could skew the mean, 
+#as the median is less sensitive to extreme values and provides a more robust estimate.
+
+df = pd.DataFrame({'A': [1, 2, np.nan, 4], 'B': [5, np.nan, 7, 8], 'C':[156,200,np.nan,5]})
+df_imputed_mean = None
+df_imputed_median = None
+df_imputed_mean = df.fillna(df.mean())
+df_imputed_median = df.fillna(df.median())
+print(df_imputed_mean)
+print(df_imputed_median)
+
+#b. Imputing with the mode
+
+You can use the mode to impute the missing values for categorical data, when the missing values are replaced with the mode (the most frequent value).
+df = pd.DataFrame({'Category': ['A', 'B', np.nan, 'A', 'C', np.nan]})
+
+#Impute missing values with mode
+df_new = None
+df_new = df['Category'].fillna(df['Category'].mode()[0])
+print(df_new)
+
+#c. Imputing with the constant value
+#Replace NaN in numerical column with a constant value (e.g. -1)
+df = pd.DataFrame({'A': [1, 2, np.nan, 4], 'B': [5, np.nan, 7, 8]})
+#df_constant = None
+df_constant = df.fillna(10)
+print(df_constant)
+
+#d. Imputing with `SimpleImputer`
+
+#`SimpleImputer` is a class in the `scikit-learn` library used to handle missing values in data sets by replacing them with specific imputed values. 
+#It provides a systematic way to fill in missing data using strategies like mean, median, most frequent value (mode) or constant value. 
+#It works seamlessly with machine learning pipelines.
+
+from sklearn.impute import SimpleImputer
+
+#Create a DataFrame with missing values
+df = pd.DataFrame({'Age': [25, 30, np.nan, 35], 'Salary': [50000, np.nan, 60000, 65000]})
+
+#Instantiate SimpleImputer with strategy='mean'
+imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
+
+#Apply imputation
+df_imputed = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
+
+print("Original DataFrame:")
+print(df)
+print("\nDataFrame After Imputation:")
+print(df_imputed)
+
+#e. Predictive imputation
+
+#Predictive imputation is a common technique for handling missing data in large data sets. 
+#Using machine learning models to estimate missing values based on feature relationships ensures data integrity and improves downstream analysis accuracy. 
+#However, it requires careful model selection and computational resources to handle large-scale data effectively.
+
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+#Create a DataFrame with missing values
+df = pd.DataFrame({
+    'Age': [25, 30, np.nan, 35],
+    'Salary': [50000, np.nan, 60000, 65000],
+    'Experience': [2, 5, 7, np.nan]
+})
+
+print("Original DataFrame:")
+print(df)
+
+#Separate rows with and without missing values for the 'Salary' column
+train_data = df[df['Salary'].notnull()]
+test_data = df[df['Salary'].isnull()]
+
+#Train a regression model to predict 'Salary' based on other columns
+model = LinearRegression()
+X_train = train_data[['Age', 'Experience']].fillna(0)  # Fill NaNs in predictors temporarily
+y_train = train_data['Salary']
+model.fit(X_train, y_train)
+
+#Predict missing 'Salary' values
+X_test = test_data[['Age', 'Experience']].fillna(0)
+predicted_salary = model.predict(X_test)
+
+#Impute the predicted values into the original DataFrame
+df.loc[df['Salary'].isnull(), 'Salary'] = predicted_salary
+
+print("\nDataFrame After Predictive Imputation:")
+print(df)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
