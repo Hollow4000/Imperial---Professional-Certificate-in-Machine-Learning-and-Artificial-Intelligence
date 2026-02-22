@@ -1,1 +1,300 @@
+import numpy as np
+
+#This notebook covers the different operations of the NumPy array, including:
+
+#- Creating a NumPy array
+
+#- Picking up elements from the NumPy array
+
+#- Operations in an array
+
+#- Computing the frequency of occurrence of elements in an array
+
+#- Appending elements to an array
+
+#- Creating arrays within specific intervals
+
+#- Iterating array elements
+
+#- Encoding values in an array
+
+#- Reshaping the array in different dimensions
+
+
+# Create a one-dimensional array
+arr1 = np.array([1, 2, 3, 4, 5])
+print("One dimensional array is" , arr1)
+
+# Create a two-dimensional array
+arr2 = np.array([[1, 2], [3, 4]])
+print("Two dimensional array is", arr2)
+
+
+values = np.array([1,2,1,1,6,5,1])
+print("The outcome of die thrown several times is given by",values)
+
+
+#Elements in a NumPy array can be accessed using indexing or slicing:
+
+#- Indexing allows direct access to individual elements using their index positions. 
+
+#- Slicing enables selection of a range of elements from the array.
+
+#The first element of the array is printed by using index 0
+print(arr1[0])
+#The last element of the array is printed by using index -1
+print(arr1[-1])
+
+The index elements can be mentioned for a 2D array for selecting array elements
+print(arr2[0,1])#prints the first row, second column of the array arr2
+
+arr = np.array([10, 20, 30, 40, 50])
+
+# Select elements from index 1 to index (4-1)
+print(arr[1:4])
+# Select every second element
+print(arr[::2])
+# Reverse the array
+print(arr[::-1])
+
+
+#1. What is the number of elements in the array?
+dice = None
+dice = np.array([1,2,1,1,6,5,1,3,4,6,1])
+print("The number of elements in the array is", len(dice))
+
+#2. Which is the second-to-last element in the array?
+print("The second last element in the array is", dice[-2])
+
+#3. Display the elements from index position 4 to the end of the array.
+print("The elements from index position 4 to the end of the array are ", dice[4:])
+
+#4. Display the elements from the 2nd position to the 7th position in the array.
+print("The elements from the 2nd position to the 7th position in the array are", dice[1:7])
+
+#5. Display the elements of the array in the reverse order.
+print("The elements of the array in the reverse order are", dice[::-1])
+
+#Operations in an array
+
+#These mathematical operations include addition, subtraction, multiplication and division of elements in arrays.
+
+array1 = np.array([1, 2, 3])
+array2 = np.array([4, 5, 6])
+
+# Addition
+result_add = np.add(array1, array2)
+print("The addition of array1 and array1 is ", result_add)
+
+# Subtraction
+result_subtract = np.subtract(array1, array2)
+print("The result of array1 subtracted from array 2 is ",result_subtract)
+
+# Multiplication
+result_multiply = np.multiply(array1, array2)
+print("The result of product of array1 and array2 is ",result_multiply)
+# Division
+result_divide = np.divide(array1, array2)
+print("The result of array1 divided by array2 is ", result_divide)
+
+#In addition to the above operations, statistical operations like sum, mean, median, mode and standard deviation can also be performed on arrays.
+
+# Create an array
+arr = np.array([1, 2, 3, 4, 5])
+
+# Calculate mean
+mean = np.mean(arr)
+print("The mean value of the array is" ,mean)
+
+# Calculate median
+median = np.median(arr)
+print("The median value of the array is",median)
+
+# Calculate standard deviation
+std_dev = np.std(arr)
+print("The standard deviation of the array is ",std_dev)
+
+#Calculate sum
+sum = np.sum(arr)
+print("The sum of the array is ",sum)
+
+#1. Calculate the sum of each roll by adding corresponding elements from both arrays.
+dice1 = np.array([1,2,3,4,5,6,5,4,3,2])
+dice2 = np.array([1,1,2,2,4,5,6,3,2,1])
+sum = np.add(dice1, dice2)
+print("The sum of each roll is", sum)
+
+#2. Calculate the average reading for each die over the 10 rolls.
+mean = np.mean(sum)
+print("The average reading for each die over the 10 rolls is", mean)
+
+#3. Determine the median of the readings for each dice1 and dice2.
+median1 = np.median(dice1)
+median2 = np.median(dice2)
+print("The median of the readings for dice1 is", median1)
+print("The median of the readings for dice2 is", median2)
+
+#4. Multiply the readings of the two dice for each roll.
+product = np.multiply(dice1, dice2)
+print("The product of the readings of the two dice for each roll is", product)
+
+#For a 2D array find out the mean for each row.
+array_mean = ([2,4,6,8],[3,6,9,12])
+print("The mean of each row is given by",np.mean(array_mean, axis = 1))
+
+#Computing the frequency of occurrence of elements in an array
+
+#The frequency of occurrence of elements can be computed using `np.unique` function.
+values = np.array([1,2,1,1,6,5,1,3,4,6,1])
+unique, counts = np.unique(values, return_counts=True)
+dict(zip(unique, counts))
+
+#For die 1, what is the frequency of occurrence of every element?
+unique, counts = np.unique(dice1, return_counts=True)
+dict(zip(unique, counts))
+
+#You suspect that die1 is not a fair die.
+#Estimate the occurrence of each element and display the output in the form of a graph to prove your view
+import matplotlib.pyplot as plt
+unique, counts = np.unique(dice1, return_counts=True)
+plt.vlines(unique, 0, counts/10,lw = 55)
+plt.ylim(0, max(counts/10) * 1.06)
+plt.title("Density estimation")
+plt.show()
+
+# Appending elements to an array
+
+#The `np.append()` function allows you to add elements to the end of an array. 
+#It does not modify the original array but returns a new array with the appended elements.
+
+array3 = np.array([1,2,3])
+array3 = np.append(array3, [2,4,3])
+print("The appended array is ",array3)
+
+#You throw die1 three more times and get elements [2,3,3]. What is the list of numbers thrown by die1?
+die1 = np.append(dice1, [2,3,3])
+print("The list of numbers thrown by die1 is", die1)
+
+# Creating arrays within specific intervals
+
+#Use the `np.arange()` function in NumPy to create arrays with evenly spaced values within a specified interval. 
+#It is similar to Python's `built-in range()` function. However, it works with both integers and floating-point numbers and returns a NumPy array.
+
+#The function is: `numpy.arange([start, ] stop, [step, ] dtype=None)`,
+
+#where:
+
+#- `start` is the starting value of the interval.
+
+#- `stop` is the end value of the interval.
+
+#- `step` is the spacing between values with a default of 1.
+
+#- `dtype` is the data type of the output array.
+
+arr_arange = np.arange(5, 10)
+print("The array created is given by",arr_arange)
+
+#List all the two-digit positive integers from 10 to 100
+two_digits = np.arange(10,100)
+print("The list of two-digit integers from 10 to 100 is given by",two_digits)
+
+#How many numbers are there in the sequence S = 1,4,7,.....1005 for k?
+S = np.arange(1,1006, 3)
+np.shape(S)[0]
+
+#Iterating array elements
+
+#You can iterate over elements in a NumPy array using basic Python loops or specialised NumPy functions like `nditer()` and `ndenumerate()`. 
+#Let's explore each method with examples.
+
+arr1_iter = np.array([1, 2, 3, 4, 5])
+
+for element in arr:
+    print(element)
+
+
+
+arr2_iter = np.array([[1, 2, 3], [4, 5, 6]])
+
+for row in arr2_iter:
+    for element in row:
+        print(element)
+
+arr3_iter = np.array([[1, 2, 3], [4, 5, 6],[7,8,9]])
+
+# Iterate over each element using nditer
+for element in np.nditer(arr3_iter):
+    print(element)
+
+#If both index and values are required, enumerate is used
+arr2_enumerate = np.array([[1, 2, 3], [4, 5, 6]])
+
+for idx, element in np.ndenumerate(arr2_enumerate):
+    print(f"Index: {idx}, Value: {element}")
+
+
+#Suppose you have a 2D array representing the outcomes of rolling two dice multiple times.
+#Each row represents a roll, and the columns represent the outcomes of the first and second die, respectively.
+#Iterate over the array and print the index and value of each outcome.
+#Calculate the total sum of all dice rolls.
+dice_outcomes = np.array([
+    [1, 2],
+    [3, 4],
+    [5, 6],
+    [2, 5],
+    [6, 3]
+])
+# Initialize total sum
+total_sum = 0
+
+# Iterate over the array using ndenumerate
+for idx, value in np.ndenumerate(dice_outcomes):
+    print(f"Index: {idx}, Value: {value}")
+    total_sum += value
+print(f"Total Sum of All Dice Rolls: {total_sum}")
+
+# Encoding values in an array
+
+#To encode values in a NumPy array, you can use techniques like one-hot encoding or string encoding depending on the type of data and the purpose:
+
+#- One-hot encoding is commonly used in machine learning to convert categorical data into a binary matrix.
+
+#- To encode or decode strings, use string encoding.
+
+genders = np.array(['Male', 'Female', 'Male', 'Female', 'Male'])
+
+encoded_genders = np.where(genders == 'Male', 0, 1)
+# Male is encoded to 0 and Female to 1
+print("Original Genders:", genders)
+print("Encoded Genders:", encoded_genders)
+
+#A coin is thrown 10 times and the output is noted in an array.
+#Encode this information to a numeric array of '0' and '1'
+#Use may use 'H' is 1, and 'T' is 0.
+coin_throw = np.array(['H','T', 'H','H','H','T','T','T','T','H'])
+encoded_coin_throw = np.where(coin_throw == 'H', 1, 0)
+print("Original Coin Throw:", coin_throw)
+print("Encoded Coin Throw:", encoded_coin_throw)
+
+# Reshaping the array in different dimensions
+
+#To reshape an array using NumPy, you can use the `np.reshape()` function. 
+#This function allows you to change the shape of an array without altering its data.
+
+arr_reshape = np.array([1, 2, 3, 4, 5, 6])
+
+# Reshape the array into a 2D array with 2 rows and 3 columns
+new_arr = arr_reshape.reshape(2, 3)
+
+print(new_arr)
+
+# A fair coin is tossed by two players and stored in an array.
+#Each player played 3 times in a row.
+#Show the  values played by each player
+coins = np.array(['H','T','T','T','H','H'])
+coins = coins.reshape(2,3)
+print("The values for each player is stored for each row is",coins)
+
+
 
