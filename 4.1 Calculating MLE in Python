@@ -1,0 +1,104 @@
+#Maximum likelihood estimation (MLE) is a statistical method used to estimate the parameters of a probability distribution or statistical model based on observed data. 
+#The goal of MLE is to find the values of the model parameters that maximise the likelihood of observing the data given in the model. 
+#This method is widely used in various fields, such as economics, finance, biology and engineering, for analysing relationships between variables and making predictions.
+
+
+#The steps to implement MLE are:
+
+#- Assume a probability distribution.
+
+#- Define the likelihood function.
+
+#- Maximise the log likelihood.
+
+#- Compute the maximum likelihood estimate.
+
+import numpy as np
+from scipy.stats import bernoulli
+
+sample = np.load('data/sample_1.npy')
+
+
+Convert `sample` to a binary array.
+sample[sample == 'H'] = 1
+sample[sample == 'T'] = 0
+sample = sample.astype(int)
+
+#Store the number of coin tosses to the variable `n`.
+#Store this as `heads_total`.
+
+n = None
+heads_total = None
+
+n = np.size(sample)
+heads_total = np.sum(sample)
+
+print("The number of coin tosses is given by",n)
+print("The number of heads in total is given by",heads_total)
+
+#Maximum number of consecutive heads appearing together. Stored as a variable named `max_running`.
+running_heads = 0
+max_running = 0
+
+heads_total = np.sum(sample)
+for i in range(n):
+    if sample[i] == 1:
+        running_heads = running_heads + 1
+        if running_heads >= max_running:
+            max_running = running_heads
+    else:
+        running_heads = 0
+max_running
+
+print("The maximum number of consecutive heads is",max_running)
+
+#Find the MLE estimate for $\theta$.
+
+#- $\theta$ is the probability of head showing in a single toss. 
+
+#- Compute $\hat{\theta}$.
+
+theta_hat = None
+
+theta_hat = np.mean(sample)
+
+print("The MLE estimate of theta is",theta_hat)
+
+#Compute the number of entries.
+#- Here, '1' stands for 'head'.
+
+#- Load `sample_2` and store it in `sample_2`.
+
+#- Compute the number of entries and store in `len_2`.
+
+sample_2 = None
+len_2 = None
+
+sample_2 = np.load('data/sample_2.npy')
+len_2 = np.size(sample_2)
+
+print("The number of entries in sample_2 is given by ",len_2)
+
+#After how many tosses does your MLE estimate falls within the range of [0.96999, 0.97001]? 
+
+#- Report the minimum number of tosses required for the MLE estimate to fall within this range.
+
+#- To compute this, first calculate the ratios, i.e. the cumulative sum of elements, in `sample_2` divided by the number of trials at each step.
+
+#- Assign the `truth` value between the range of $[0.96999, 0.97001 ]$.
+
+#- Compute the `smallest-accurate-n`.
+
+ratios = None
+truth = None
+smallest_accurate_n = None
+
+ratios = np.cumsum(sample_2) / (np.arange(1,pow(10,6)+ 1))
+
+truth = (ratios <= 0.97001) & (ratios >= 0.96999)
+
+smallest_accurate_n = np.argmax(truth) +1 
+
+print("The minimum number of tosses is",smallest_accurate_n)
+
+
