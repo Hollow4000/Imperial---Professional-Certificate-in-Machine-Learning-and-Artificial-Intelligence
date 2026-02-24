@@ -1,0 +1,151 @@
+import numpy as np
+import pandas as pd
+import random
+import matplotlib.pyplot as plt
+
+#Scenario: 
+
+#- You are given two correlated stocks, $X$ and $Y$, both of which are normally distributed.
+
+#- You will invest all of your money across these two stocks.
+
+#- Your goal is to find $\alpha \in [0,1]$ (the fraction of your investment allocated to stock $X$) that minimises the variance of the portfolio, i.e.: $$ \mathbb{V}\mathrm{AR}[\alpha X + (1-\alpha)Y] $$
+
+#- You are provided with `returns.npy`, a two-dimensional NumPy array that contains the past 200 return values for (X,Y).
+
+
+#1. Estimate $\mu_X, \mu_Y, \sigma_{X}^2, \sigma_{Y}^2, \sigma_{XY}$ from the sample and compute the optimal investment strategy $\alpha$.
+
+#2. Since the parameters were estimated from a sample, the results may be biased. To address this, you’ll use bootstrapping, repeatedly sampling 200 return values (with or without replacement) from the original data set and re-estimating the optimal investment strategy each time. 
+#Perform this procedure B = 500 times, and compute the standard error of the optimal $\alpha$ estimated from the original return data.
+
+#Load returns data set: -
+
+returns = np.load('data/returns.npy')
+print(returns[:5])
+n = 200
+print("The shape of returns is ",returns.shape)
+
+#Estimate the mean returns:-
+
+hat_mean = None
+hat_mean = np.mean(returns,0)
+
+print("The mean returns is given by ",hat_mean)
+
+#Compute the covariance matrix: -
+
+hat_cov = np.zeros((2,2))
+
+for i in range(n):
+    hat_cov = hat_cov + (returns[i]-hat_mean).reshape((2,1))*(returns[i]-hat_mean).reshape((1,2))
+
+hat_cov = hat_cov/(n-1)
+hat_varx = hat_cov[0,0]
+hat_vary = hat_cov[1,1]
+hat_covar = hat_cov[0,1]
+
+print("The covariance matrix is given by ",hat_cov)
+
+#Estimate the optimal investment: -
+
+#The optimal investment is as follows:
+
+#$$ \alpha = \frac{\sigma_Y^2 - \text{Cov}(X,Y)}{\sigma_X^2 + \sigma_Y^2 - 2 \text{Cov}(X,Y)} $$
+
+#where:
+
+#- $\sigma_X^2$ is the variance of asset X.
+
+#- $\sigma_Y^2$ is the variance of asset Y.
+
+#- $\text{Cov}(X,Y)$ is the covariance between X and Y.
+
+#Estimate the optimal value of $\alpha$: -
+
+def optimal_alpha(varx, vary, covar):
+    pass
+
+# Compute the optimal_alpha function using the formula given above.
+
+def optimal_alpha(varx, vary, covar):
+    return (float) (vary - covar)/(varx + vary - 2*covar)
+
+optimal_investment = optimal_alpha(hat_varx, hat_vary, hat_covar)
+
+print("The optimal investment is given by ",round(optimal_investment,3) )
+
+def hat_alpha(sample_returns): #make the above process a function
+    hat_mean = np.mean(sample_returns,0)
+    hat_cov = np.zeros((2,2))
+    n = np.size(sample_returns,0)
+    for i in range(n):
+        hat_cov = hat_cov + (sample_returns[i]-hat_mean).reshape((2,1))*(sample_returns[i]-hat_mean).reshape((1,2))
+    hat_cov = hat_cov/(n-1)
+    hat_varx = hat_cov[0,0]
+    hat_vary = hat_cov[1,1]
+    hat_covar = hat_cov[0,1]
+    return optimal_alpha(hat_varx, hat_vary, hat_covar)
+
+
+# Bootstrapping
+
+#Bootstrapping is a resampling technique that is used to simulate multiple data sets by sampling with replacement. 
+#In this method, 5,000 samples are generated and the estimator $\hat{\alpha}$ is computed for each sample. 
+#The mean of these estimates is then calculated to provide an overall approximation of $\hat{\alpha}$.
+
+simulation = 500
+B = simulation
+samples = n
+estimations = np.zeros(simulation)
+
+
+for sim in range(simulation): #Simulate this many times
+    generated_sample = returns[np.random.choice(returns.shape[0], size=samples,replace=True), :]
+    estimations[sim] = hat_alpha(generated_sample)
+
+
+print("mean", round(np.mean(estimations),3),"min",np.min(estimations), "max", np.max(estimations))
+
+#Given a set of bootstrap estimates $(\hat{\alpha}_1, \hat{\alpha}_2, \dots, \hat{\alpha}_B)$, the standard error of the mean (SEM) is calculated as:
+
+$$
+\text{SEM} = \sqrt{\frac{1}{B-1} \sum_{i=1}^{B} (\hat{\alpha}_i - \bar{\hat{\alpha}})^2}
+$$
+
+#where:
+
+-  B is the number of bootstrap simulations.
+- $(\bar{\hat{\alpha}} = \frac{1}{B} \sum_{i=1}^{B} \hat{\alpha}_i)$ is the mean of the bootstrap estimates.
+- $(\hat{\alpha}_i)$ is the estimate from the \( i \)-th bootstrap simulation.
+
+#Based on the SEM, compute the `bootstrap_error` and round it to three decimal places.
+
+bootstrap_error = None
+
+#Compute the standard error.
+
+bootstrap_error = np.sqrt( np.sum(np.square(estimations - np.mean(estimations))) /(B-1))
+
+print("The bootstrap error is given by ",round(bootstrap_error,3))
+
+print(estimations.dtype)
+print(np.mean(estimations))  
+
+#Compute `bootstrap_error`.
+
+#To compute the error in bootstrap, use the `np.random.randn` function. Assign your answer to `bootstrap_error1`.
+
+B = 500
+samples = 100
+#bootstrap_error1 = None
+estimations = np.zeros(simulation)
+for sim in range(simulation): #simulate this many times
+    pass
+
+for sim in range(simulation):
+    generated_sample = returns[np.random.choice(returns.shape[0], size=samples, replace=True), :]
+    estimations[sim] = hat_alpha(generated_sample)
+bootstrap_error1 = np.sqrt( np.sum(np.square(estimations - np.mean(estimations))) /(B-1))
+
+print("The bootstrap error is given by ",round(bootstrap_error1,3))
