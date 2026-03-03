@@ -1,0 +1,200 @@
+#There are different approaches to probability in ML.
+
+#- Frequentist approach
+#- Maximum likelihood estimation
+#- Bayesian approach
+#- Laplace's rule of succession
+
+import numpy as np
+from math import comb
+from scipy.stats import binom
+import matplotlib.pyplot as plt
+
+#Frequentist approach
+
+#The frequentist approach to statistics interprets probability as the long-run frequency of events in repeated experiments. 
+#It focuses on making inferences based solely on observed data, without incorporating prior beliefs or subjective probabilities. Key methods include hypothesis testing, confidence intervals and parameter estimation.
+
+#The key expression in the frequentist approach is the likelihood function:
+
+L(\𝜃; x) = P(x|𝜃)
+
+#You throw a coin five times and obtain five heads (X_1 = 1, \ X_2 = 1, \ldots, X_5 = 1). 
+#What is 𝜃 := \mathbb{P}[\text{heads}]$?
+
+s = ... #Number of successes
+n = ... #Number of trials
+theta_hat = ... #Number of successes 's' divided by number of trials 'n'
+print(theta_hat)
+
+#If the truth is 𝜃 = 0.9, what is the probability that you will see five heads in a row? 
+#Interpret the result.
+
+#The probability of heads = 𝜃^s, where s is the number of heads.
+
+#Define the true probability of heads
+theta = 0.9
+
+#Number of consecutive heads required
+n_heads = 5
+
+#Calculate the probability of observing five heads in a row
+prob_5_heads = theta ** n_heads
+
+#Print the result
+print(f"True probability of heads (θ): {𝜃}")
+print(f"Probability of observing {n_heads} consecutive heads: {prob_5_heads:.5f}")
+
+#Maximum likelihood estimation
+
+#Goal: Find the parameter 𝜃 (e.g. the probability of heads for a coin) that maximises the likelihood of observing the data you have.
+
+
+#Given:
+X_1 = 1, X_2 = 1, \ldots, X_5 = 1, which means all five coin tosses resulted in heads.
+
+#You have: L(x; \𝜃) = p(X_1 = 1, \ X_2 = 1, \ldots, X_5 = 1 | \𝜃) = \prod \𝜃^5
+
+#Hence, the 𝜃 that maximises the likelihood is 𝜃 = 1.
+
+#For a coin with $\mathbb{P}[\text{head}] = 𝜃, what is the probability of having s heads out of n (independent) flips? 
+#(Recall the binomial distribution.) Compute this value for n=10, s = 3, 𝜃 = 0.6.
+
+$ \mathbb{P}[\sum_{i=1}^n X_i] = \displaystyle{n \choose{s}} \theta^s (1- 𝜃)^{n-s} $
+
+HINT: For the mathematical formula that uses combinations, the use  `comb(n,s)` function.
+
+n = 10
+s = 3
+𝜃 = 0.6
+likelihood = comb(n,s)*(𝜃**s)*((1-𝜃)**(n-s))
+print(round(likelihood,4))
+
+#Computed using the inbuilt SciPy function
+round(binom.pmf(s, n, 𝜃),4)
+
+#Bayesian approach
+#Given that you have s heads in total, out of n flips, you would like to find a probability distribution for 𝜃 in [0,1], denoted f(𝜃).
+
+#The major philosophy is to assume that f(𝜃) is proportional to the likelihood of data under 𝜃; that is, 
+#if a 𝜃 value obtains a likelihood that is greater than or equal to the likelihood of 𝜃, then f(𝜃) should be greater than or equal to f(𝜃). You should thus have:
+#f(𝜃) \propto  \displaystyle{n \choose{s}} \𝜃^s (1-\𝜃)^{n-s}
+#where $\propto$ denotes 'proportional to', so there exists some constant C that does not depend on 𝜃 so that:
+#f(𝜃)  =  \displaystyle C \cdot {n \choose{s}} \theta^s (1- \𝜃)^{n-s}
+
+#Simplifying this using basic linear algebra, the value of f(𝜃) is given by:
+#f(\𝜃) = (n+1) {n \choose s} \𝜃^s (1-\𝜃)^{n-s} $$
+
+#Plotting f(𝜃) for the sequences:
+#- Three heads out of three flips
+#- Five heads out of five flips
+#- Two heads out of ten flips
+#- Nine heads out of ten flips
+
+def density_theta(n,s, theta):
+    return (n+1)*comb(n,s)*(theta**s)*((1-theta)**(n-s))
+
+divide = 1000
+
+thetas = np.linspace(0, 1, divide)
+
+#1
+C1 = np.array(list(map(density_theta,3*np.ones(divide).astype(int),3*np.ones(divide).astype(int), thetas)))
+
+#2
+C2 = np.array(list(map(density_theta,5*np.ones(divide).astype(int),5*np.ones(divide).astype(int), thetas)))
+
+#3
+C3 = np.array(list(map(density_theta,10*np.ones(divide).astype(int),9*np.ones(divide).astype(int), thetas)))
+
+#4
+C4 = np.array(list(map(density_theta,10*np.ones(divide).astype(int),2*np.ones(divide).astype(int), thetas)))
+
+
+plt.plot(thetas, C1, label='3 out of 3')
+plt.plot(thetas, C2, label='5 out of 5')
+plt.plot(thetas, C3, label='9 out of 10')
+plt.plot(thetas, C4, label='2 out of 10')
+plt.yticks([])
+
+plt.xlabel(r'$\theta$ values')
+plt.ylabel(r'density of $\theta$')
+plt.title(r"Plot of $f(\theta)$ over $\theta \in [0,1]$ for various success and trials")
+plt.yticks()
+plt.xlim([0,1])
+plt.legend()
+plt.show()
+
+Given $f(\theta)$ as you derived above, if you see $s$ heads out of $n$ trials, what is the probability that you will have a head in the next ($n+1$-th) flip? By the law of total probability, you have:
+\begin{align}\mathbb{P}[\text{Head on $n+1$-th flip} \ | \ \text{$s$ heads out of $n$ flips previously}] & =  
+\int_{x \in [0,1]} \mathbb{P}[\text{Heads} \ | \ \theta] \cdot f(\theta) \mathrm{d} \theta \\
+& = \int_{x \in [0,1]} \theta \cdot f(\theta) \mathrm{d} \theta \\
+& = \mathbb{E}[\theta] = \color{red}{\dfrac{s+1}{n+2}}
+\end{align}
+
+#Laplace's rule of succession
+
+I#n the end, you replaced the expectation of $\theta$ directly. 
+#However, though relatively simple, this substitution is not immediate. 
+
+In the integration step, you first substitute the expression for $f(\theta)$ as follows:
+\begin{align}
+\int_{x \in [0,1]} \theta \cdot f(\theta) \mathrm{d} \theta  = \int_{x \in [0,1]} \theta \cdot (n+1) {n \choose s} \theta^s (1-\theta)^{n-s} \mathrm{d} \theta
+\end{align}
+
+#Taking the constants outside the integral gives:
+\begin{align}
+(n+1) {n \choose s}  \int_{x \in [0,1]} \theta^{s+1} (1-\theta)^{n-s} \mathrm{d} \theta
+\end{align}
+
+#Using the Euler's function as discussed earlier, you have $\int_{x \in [0,1]} \theta^{s+1} (1-\theta)^{n-s} \mathrm{d} \theta = \dfrac{(s+1)!(n-s)!}{(n+2)!}$; hence the above integration is:
+\begin{align}
+(n+1) {n \choose s}  \dfrac{(s+1)!(n-s)!}{(n+2)!}
+\end{align}
+
+#Substituting this result, the integral becomes:
+\begin{align}
+& (n+1) {n \choose s}  \dfrac{(s+1)!(n-s)!}{(n+2)!}\\
+= & \color{orange}{(n+1)} \dfrac{\color{red}{n!}}{\color{blue}{(n-s)!} s!}  \dfrac{(s+1)!\color{blue}{(n-s)!}}{(n+2)\color{orange}{(n+1)}\color{red}{n!}} \\
+= & \dfrac{(s+1)!}{s! (n+2)} \\
+= & \dfrac{s+1}{n+2}
+\end{align}
+
+#Discussion
+#The final equation $\mathbb{E}[\theta] =\dfrac{s+1}{n+2}$ is called *Laplace's rule of succession*. 
+#Here, the estimation of the true $\theta$, when you have $s$ successes out of $n$ trials, is given as $(s+1)/(n+2)$. 
+#Discuss how this is similar to or different from the MLE or unbiased estimation of $\theta$.
+
+#Laplace's rule of succession provides a Bayesian approach to estimating the probability parameter θ in a binomial distribution. It uses the formula:
+
+\theta = \frac{s+1}{n+2
+
+#where s is the number of successes observed, and n is the total number of trials.
+
+#Laplace's rule of succession differs from other estimation methods in the following ways:
+
+#1. In MLE, the binomial probability parameter θ is s/n, while in Laplace's rule of succession, it is: $$ \theta = \frac{s+1}{n+2}$$ This is to avoid the extreme probability of 0 and 1 while using Laplace's rule of succession.
+
+#2. MLE represents a frequentist approach that only considers the observed data, whereas Laplace's rule represents a Bayesian approach that incorporates prior beliefs.
+
+#3. For small samples, Laplace's rule provides reasonable estimates. However, if the sample size increases, both methods converge to $s/n$.
+
+#4. MLE (s/n) is simpler and more widely used in frequentist statistics, whereas Laplace's rule is better for cases that involve a small sample size, where zero probability would be problematic or where the Bayesian approach is preferred.
+
+#- What is the probability that the sun will rise tomorrow?
+
+#Laplace’s answer, using only observed sunrises and the rule of succession, would be:
+
+(n+1) / (n+2)
+
+#For example, if the sun has risen for 1,826,213 days (about 5,000 years), the probability would be:
+
+$P=
+1,826,213 / 1,826,214
+ ≈99.999945%$
+
+def laplace_prob(s): 
+    return (s + 1) / (s + 2)
+
+result = laplace_prob(1826213)
+
